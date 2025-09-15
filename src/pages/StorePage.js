@@ -52,11 +52,9 @@ class StorePage {
       '#search_filter_controls, #additional_search_filters, #search_filters_rightcol'
     ).locator(`label:has-text("${labelText}")`);
     const checkbox = label.locator('input[type="checkbox"]');
-    // если инпут визуально скрыт, но остаётся в DOM
     if (await checkbox.count()) {
       return await checkbox.first().isChecked();
     }
-    // fallback: у label появляется класс checked
     const cls = await label.first().getAttribute('class');
     return (cls || '').includes('checked');
   }
@@ -91,24 +89,18 @@ class StorePage {
     expect(list).toBe(header);
   }
 
-  // ---------- Данные первой игры ----------
   async getFirstGameData() {
     const first = this.resultRows.first();
     await expect(first).toBeVisible();
 
     const title = normalizeText(await first.locator('._1n_4-zvf0n4aqGEksbgW9N').innerText());
-    //const releaseDate = normalizeText(await first.locator('.search_released').innerText());
-    // цена может быть в .discount_final_price или в .search_price
     let price = '';
     if (await first.locator('._3j4dI1yA7cRfCvK8h406OB').count()) {
       price = normalizeText(await first.locator('._3j4dI1yA7cRfCvK8h406OB').innerText());
     } 
-    // else {
-    //   price = normalizeText(await first.locator('.search_price').innerText());
-    // }
     logger.info("Price: " + price);
     logger.info("Title: " + title);
-    return { title, /*releaseDate,*/ price };
+    return { title, price };
   }
 
   async clickFirstGame() {
